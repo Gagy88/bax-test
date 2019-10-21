@@ -44,6 +44,7 @@ class CharactersController extends ApiController
      * )
      * @SWG\Tag(name="characters")
      *
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function fetchAllCharactersFromGivenDimension(Request $request)
@@ -91,6 +92,7 @@ class CharactersController extends ApiController
      * )
      * @SWG\Tag(name="characters")
      *
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function fetchAllCharactersFromGivenLocation(Request $request)
@@ -138,6 +140,7 @@ class CharactersController extends ApiController
      * )
      * @SWG\Tag(name="characters")
      *
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function fetchAllCharactersFromGivenEpisode(Request $request)
@@ -153,6 +156,41 @@ class CharactersController extends ApiController
 
         if (!empty($episodes['characters'])) {
             $response = $this->rickyAndMortyService->getCharactersById($this->getCharactersId($episodes['characters']));
+        } else {
+            $response = [];
+            $this->setStatusCode(204);
+        }
+
+        return $this->respond($response);
+    }
+
+    /**
+     * Showing all information of a character (Name, species, gender, last location, dimension, etc).
+     *
+     * @Route("/{id}", methods={"GET"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="all information of a character",
+     * )
+     * @SWG\Response(
+     *     response=204,
+     *     description="empty response",
+     * )
+     * @SWG\Response(
+     *     response="400",
+     *     description="Bad request"
+     * )
+     * @SWG\Tag(name="characters")
+     *
+     * @param int $id
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function fetchCharacter(int $id)
+    {
+        $character = $this->rickyAndMortyService->getCharactersById([$id]);
+
+        if (!empty($character)) {
+            $response = $character;
         } else {
             $response = [];
             $this->setStatusCode(204);
