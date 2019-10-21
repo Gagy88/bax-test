@@ -73,6 +73,19 @@ class RickAndMortyApiWrapper
     }
 
     /**
+     * Get all data from RickAndMortyApi
+     *
+     * @param string $uri
+     * @return array
+     */
+    public function getAll(string $uri): array
+    {
+        $response = $this->sendRequest($uri);
+
+        return json_decode($response->getBody()->getContents(), true);
+    }
+
+    /**
      * Get quired data from RickAndMortyApi
      *
      * @param string $uri

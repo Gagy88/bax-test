@@ -25,6 +25,15 @@ class RickAndMortyApi extends RickAndMortyApiWrapper
     }
 
     /**
+     * @param array $episodeName
+     * @return array
+     */
+    public function getEpisodesById(array $id): array
+    {
+        return $this->getById('episode/' . implode(", ", $id));
+    }
+
+    /**
      *
      * @param array $id
      * @return array
