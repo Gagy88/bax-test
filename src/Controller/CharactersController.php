@@ -23,7 +23,7 @@ class CharactersController extends ApiController
     /**
      * List all characters that exist (or are last seen) in a given dimension.
      *
-     * @Route("/dimension", methods={"GET"})
+     * @Route("/dimension/{dimensionName}", methods={"GET"})
      * @SWG\Response(
      *     response=200,
      *     description="all characters that exist (or are last seen) in a given dimension",
@@ -36,27 +36,20 @@ class CharactersController extends ApiController
      *     response="400",
      *     description="Bad request"
      * )
-     * @SWG\Parameter(
-     *     name="dimension",
-     *     in="query",
-     *     type="string",
-     *     description="The field used to get characters in dimension"
-     * )
      * @SWG\Tag(name="characters")
      *
-     * @param Request $request
+     * @param string $dimensionName
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function fetchAllCharactersFromGivenDimension(Request $request)
+    public function fetchAllCharactersFromGivenDimension(string $dimensionName)
     {
-        if ($request->get('dimension') == '') {
+        // check if first character is space
+        if ($dimensionName[0] == ' ') {
             $this->setStatusCode(400);
-            return $this->respondWithErrors("request param is missing");
-        } else {
-            $dimension = $request->get('dimension');
+            return $this->respondWithErrors("request param is missing or wrong");
         }
 
-        $dimensions = $this->rickyAndMortyService->getDimensions($dimension);
+        $dimensions = $this->rickyAndMortyService->getDimensions($dimensionName);
 
         if (!empty($dimensions['results'])) {
             $response = $this->rickyAndMortyService->getCharactersById($this->getCharactersIdFromLocation($dimensions['results']));
@@ -71,7 +64,7 @@ class CharactersController extends ApiController
     /**
      * List all characters that exist (or are last seen) at a given location.
      *
-     * @Route("/location", methods={"GET"})
+     * @Route("/location/{locationName}", methods={"GET"})
      * @SWG\Response(
      *     response=200,
      *     description="all characters that exist (or are last seen) at a given location",
@@ -84,27 +77,20 @@ class CharactersController extends ApiController
      *     response="400",
      *     description="Bad request"
      * )
-     * @SWG\Parameter(
-     *     name="location",
-     *     in="query",
-     *     type="string",
-     *     description="The field used to get characters in location"
-     * )
      * @SWG\Tag(name="characters")
      *
-     * @param Request $request
+     * @param string locationName
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function fetchAllCharactersFromGivenLocation(Request $request)
+    public function fetchAllCharactersFromGivenLocation(string $locationName)
     {
-        if ($request->get('location') == '') {
+        // check if first character is space
+        if ($locationName[0] == ' ') {
             $this->setStatusCode(400);
-            return $this->respondWithErrors("request param is missing");
-        } else {
-            $location = $request->get('location');
+            return $this->respondWithErrors("request param is missing or wrong");
         }
 
-        $locations = $this->rickyAndMortyService->getLocations($location);
+        $locations = $this->rickyAndMortyService->getLocations($locationName);
 
         if (!empty($locations['results'])) {
             $response = $this->rickyAndMortyService->getCharactersById($this->getCharactersIdFromLocation($locations['results']));
@@ -119,7 +105,7 @@ class CharactersController extends ApiController
     /**
      * Show all characters that partake in a given episode.
      *
-     * @Route("/episode", methods={"GET"})
+     * @Route("/episode/{episodeId}", methods={"GET"})
      * @SWG\Response(
      *     response=200,
      *     description="all characters that partake in a given episode",
@@ -132,27 +118,20 @@ class CharactersController extends ApiController
      *     response="400",
      *     description="Bad request"
      * )
-     * @SWG\Parameter(
-     *     name="episode",
-     *     in="query",
-     *     type="string",
-     *     description="The field used to get characters in episode"
-     * )
      * @SWG\Tag(name="characters")
      *
-     * @param Request $request
+     * @param string episodeId
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function fetchAllCharactersFromGivenEpisode(Request $request)
+    public function fetchAllCharactersFromGivenEpisode(string $episodeId)
     {
-        if ($request->get('episode') == '') {
+        // check if first character is space
+        if ($episodeId[0] == ' ') {
             $this->setStatusCode(400);
-            return $this->respondWithErrors("request param is missing");
-        } else {
-            $episode = $request->get('episode');
+            return $this->respondWithErrors("request param is missing or wrong");
         }
 
-        $episodes = $this->rickyAndMortyService->getEpisodesById([$episode]);
+        $episodes = $this->rickyAndMortyService->getEpisodesById([$episodeId]);
 
         if (!empty($episodes['characters'])) {
             $response = $this->rickyAndMortyService->getCharactersById($this->getCharactersId($episodes['characters']));
