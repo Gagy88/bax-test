@@ -111,4 +111,15 @@ class ApiController extends Controller
     {
         return $this->setStatusCode(201)->respond($data);
     }
+
+    /**
+     * Returns a 204 No Content
+     *
+     *
+     * @return Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function respondNoContent($data = [])
+    {
+        return $this->setStatusCode(204)->respond($data);
+    }
 }

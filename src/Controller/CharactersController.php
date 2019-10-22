@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Controller\ApiController;
 use App\Services\RickAndMortyApi;
 use Swagger\Annotations as SWG;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -52,7 +51,7 @@ class CharactersController extends ApiController
         $dimensions = $this->rickyAndMortyService->getDimensions($dimensionName);
 
         if (!empty($dimensions['results'])) {
-            $response = $this->rickyAndMortyService->getCharactersById($this->getCharactersIdFromLocation($dimensions['results']));
+            $response = $this->rickyAndMortyService->getCharactersById($this->rickyAndMortyService->getCharactersIdFromLocation($dimensions['results']));
         } else {
             $response = [];
             $this->setStatusCode(204);
@@ -93,19 +92,17 @@ class CharactersController extends ApiController
         $locations = $this->rickyAndMortyService->getLocations($locationName);
 
         if (!empty($locations['results'])) {
-            $response = $this->rickyAndMortyService->getCharactersById($this->getCharactersIdFromLocation($locations['results']));
+            $response = $this->rickyAndMortyService->getCharactersById($this->rickyAndMortyService->getCharactersIdFromLocation($locations['results']));
+            return $this->respond($response);
         } else {
-            $response = [];
-            $this->setStatusCode(204);
+            return $this->respondNoContent();
         }
-
-        return $this->respond($response);
     }
 
     /**
      * Show all characters that partake in a given episode.
      *
-     * @Route("/episode/{episodeId}", methods={"GET"})
+     * @Route("/episode/{episodeId}", methods={"GET"}, requirements={"page"="\d+"}))
      * @SWG\Response(
      *     response=200,
      *     description="all characters that partake in a given episode",
@@ -120,33 +117,25 @@ class CharactersController extends ApiController
      * )
      * @SWG\Tag(name="characters")
      *
-     * @param string episodeId
+     * @param int episodeId
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function fetchAllCharactersFromGivenEpisode(string $episodeId)
+    public function fetchAllCharactersFromGivenEpisode(int $episodeId)
     {
-        // check if first character is space
-        if ($episodeId[0] == ' ') {
-            $this->setStatusCode(400);
-            return $this->respondWithErrors("request param is missing or wrong");
-        }
-
         $episodes = $this->rickyAndMortyService->getEpisodesById([$episodeId]);
 
         if (!empty($episodes['characters'])) {
-            $response = $this->rickyAndMortyService->getCharactersById($this->getCharactersId($episodes['characters']));
+            $response = $this->rickyAndMortyService->getCharactersById($this->rickyAndMortyService->getCharactersId($episodes['characters']));
+            return $this->respond($response);
         } else {
-            $response = [];
-            $this->setStatusCode(204);
+            return $this->respondNoContent();
         }
-
-        return $this->respond($response);
     }
 
     /**
      * Showing all information of a character (Name, species, gender, last location, dimension, etc).
      *
-     * @Route("/{id}", methods={"GET"})
+     * @Route("/{id}", methods={"GET"}, requirements={"id"="\d+"}))
      * @SWG\Response(
      *     response=200,
      *     description="all information of a character",
@@ -169,48 +158,9 @@ class CharactersController extends ApiController
         $character = $this->rickyAndMortyService->getCharactersById([$id]);
 
         if (!empty($character)) {
-            $response = $character;
+            return $this->respond($character);
         } else {
-            $response = [];
-            $this->setStatusCode(204);
+            return $this->respondNoContent();
         }
-
-        return $this->respond($response);
-    }
-
-    /**
-     * Gets id of characters form some locations
-     *
-     * @param array $data
-     * @return array
-     */
-    private function getCharactersIdFromLocation(array $data)
-    {
-        $charactersId = [];
-
-        foreach ($data as $result) {
-            foreach ($result['residents'] as $resident) {
-                $charactersId[] = substr($resident, strrpos($resident, "/") + 1, strlen($resident));
-            }
-        }
-
-        return $charactersId;
-    }
-
-    /**
-     * Gets id of characters
-     *
-     * @param array $data
-     * @return array
-     */
-    private function getCharactersId($data)
-    {
-        $charactersId = [];
-
-        foreach ($data as $item) {
-            $charactersId[] = substr($item, strrpos($item, "/") + 1, strlen($item));
-        }
-
-        return $charactersId;
     }
 }

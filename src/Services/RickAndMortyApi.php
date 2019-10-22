@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-class RickAndMortyApi extends RickAndMortyApiWrapper
+class RickAndMortyApi extends RickAndMortyApiClient
 {
     /**
      *
@@ -11,7 +11,7 @@ class RickAndMortyApi extends RickAndMortyApiWrapper
      */
     public function getDimensions(string $dimensionName): array
     {
-        return $this->getByParams('location', ['dimension' => $dimensionName]);
+        return $this->sendRequest('location', ['dimension' => $dimensionName]);
     }
 
     /**
@@ -21,7 +21,7 @@ class RickAndMortyApi extends RickAndMortyApiWrapper
      */
     public function getLocations(string $locationName): array
     {
-        return $this->getByParams('location', ['name' => $locationName]);
+        return $this->sendRequest('location', ['name' => $locationName]);
     }
 
     /**
@@ -30,7 +30,7 @@ class RickAndMortyApi extends RickAndMortyApiWrapper
      */
     public function getEpisodesById(array $id): array
     {
-        return $this->getById('episode/' . implode(", ", $id));
+        return $this->sendRequest('episode/' . implode(", ", $id));
     }
 
     /**
@@ -40,6 +40,42 @@ class RickAndMortyApi extends RickAndMortyApiWrapper
      */
     public function getCharactersById(array $id)
     {
-        return $this->getById('character/' . implode(", ", $id));
+        return $this->sendRequest('character/' . implode(", ", $id));
+    }
+
+    /**
+     * Gets id of characters form some locations
+     *
+     * @param array $data
+     * @return array
+     */
+    public function getCharactersIdFromLocation(array $data)
+    {
+        $charactersId = [];
+
+        foreach ($data as $result) {
+            foreach ($result['residents'] as $resident) {
+                $charactersId[] = substr($resident, strrpos($resident, "/") + 1, strlen($resident));
+            }
+        }
+
+        return $charactersId;
+    }
+
+    /**
+     * Gets id of characters
+     *
+     * @param array $data
+     * @return array
+     */
+    public function getCharactersId($data)
+    {
+        $charactersId = [];
+
+        foreach ($data as $item) {
+            $charactersId[] = substr($item, strrpos($item, "/") + 1, strlen($item));
+        }
+
+        return $charactersId;
     }
 }

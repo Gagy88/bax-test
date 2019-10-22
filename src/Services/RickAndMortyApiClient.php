@@ -4,7 +4,7 @@ namespace App\Services;
 
 use GuzzleHttp\Client;
 
-class RickAndMortyApiWrapper
+class RickAndMortyApiClient
 {
     /**
      * The Guzzle instance used for HTTP requests
@@ -52,7 +52,7 @@ class RickAndMortyApiWrapper
     /**
      * Set Guzzle options
      * @param array $options
-     * @return RickAndMortyApi
+     * @return RickAndMortyApiClient
      */
     public function setOptions(array $options): self
     {
@@ -64,50 +64,12 @@ class RickAndMortyApiWrapper
      * Send HTTP Request to API
      *
      * @param null $uri
-     * @param null $arguments
+     * @param null $params
      * @return mixed
      */
-    public function sendRequest($uri = null, $arguments = null)
+    public function sendRequest($uri = null, $params = null)
     {
-        return $this->client->get($uri, $arguments);
-    }
-
-    /**
-     * Get all data from RickAndMortyApi
-     *
-     * @param string $uri
-     * @return array
-     */
-    public function getAll(string $uri): array
-    {
-        $response = $this->sendRequest($uri);
-
-        return json_decode($response->getBody()->getContents(), true);
-    }
-
-    /**
-     * Get quired data from RickAndMortyApi
-     *
-     * @param string $uri
-     * @param array $params
-     * @return array
-     */
-    public function getByParams(string $uri, array $params): array
-    {
-        $response = $this->sendRequest($uri, ['query' => $params]);
-
-        return json_decode($response->getBody()->getContents(), true);
-    }
-
-    /**
-     * Get enities from one or multiple id
-     *
-     * @param string $uri
-     * @return array
-     */
-    public function getById(string $uri): array
-    {
-        $response = $this->sendRequest($uri);
+        $response = $this->client->get($uri, ['query' => $params]);
 
         return json_decode($response->getBody()->getContents(), true);
     }
