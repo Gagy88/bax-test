@@ -25,6 +25,16 @@ class RickAndMortyApi extends RickAndMortyApiClient
     }
 
     /**
+     *
+     * @param string $typeName
+     * @return array
+     */
+    public function getLocationsByType(string $typeName): array
+    {
+        return $this->sendRequest('location', ['type' => $typeName]);
+    }
+
+    /**
      * @param array $episodeName
      * @return array
      */

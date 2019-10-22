@@ -52,12 +52,10 @@ class CharactersController extends ApiController
 
         if (!empty($dimensions['results'])) {
             $response = $this->rickyAndMortyService->getCharactersById($this->rickyAndMortyService->getCharactersIdFromLocation($dimensions['results']));
+            return $this->respond($response);
         } else {
-            $response = [];
-            $this->setStatusCode(204);
+            return $this->respondNoContent();
         }
-
-        return $this->respond($response);
     }
 
     /**
